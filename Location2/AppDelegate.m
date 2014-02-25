@@ -7,19 +7,40 @@
 //
 
 #import "AppDelegate.h"
+#import "MainWindowViewControlViewController.h"
+#import "RootViewController.h"
+
 
 @implementation AppDelegate
 
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
+@synthesize navigationController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    /*
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    self.window.rootViewController = [[MainWindowViewControlViewController alloc] init];
+    */
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    RootViewController* rootViewController = [[RootViewController alloc] initWithStyle:UITableViewStylePlain];
+    NSManagedObjectContext* context = [self managedObjectContext];
+    if( !context )
+    {
+        NSLog(@"Error: can not create manageObjectContext.");
+    }
+    rootViewController.managedObjectContext = context;
+    UINavigationController* aNavigationCntlr = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    
+    self.navigationController = aNavigationCntlr;
+    [self.window addSubview:navigationController.view];
+    [self.window makeKeyAndVisible];
+    
     return YES;
 }
 
@@ -104,7 +125,7 @@
     }
     
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Location2.sqlite"];
-    
+    //[[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
